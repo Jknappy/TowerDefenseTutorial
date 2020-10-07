@@ -57,17 +57,15 @@ public class Turret : MonoBehaviour//Objective: find a target, within a range an
     void Update()
     {
         if (target == null)
-            return;        //if we dont have a target, dont do anything.
-        //target lock on with rotation 
-        Vector3/*is basically an arrow*/ dir = target.position - transform.position;//to find direction between to points you subtract the end point by the start point (B - A)
-        Quaternion/*unitys way of dealing with rotation*/lookRotation = Quaternion.LookRotation(dir);//how to rotate to look that direction
+            return;//if we dont have a target, dont do anything.
 
+        //target lock on with rotation 
+        Vector3 dir = target.position - transform.position;     //to find direction between to points you subtract the end point by the start point (B - A)
+        Quaternion lookRotation = Quaternion.LookRotation(dir);//how to rotate to look that direction
         Vector3 rotation = Quaternion.Lerp/*smooths the transition between states*/(partToRotate.rotation, lookRotation, Time.deltaTime * turnSpeed).eulerAngles;//euler angles are the x,y,and z rotation.
         //converts the Vector3 rotation to eulerAngles so we can decide to rotate only on the y axis 
-
         partToRotate.rotation = Quaternion.Euler(0f, rotation.y, 0f);
-        //sets the partToRotate to only rotate around the y axis
-
+    
         if (fireCountdown <= 0f)
         {
             Shoot();
