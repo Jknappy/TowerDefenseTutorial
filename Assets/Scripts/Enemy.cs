@@ -2,36 +2,43 @@
 
 public class Enemy : MonoBehaviour
 {
-    public float speed = 10f; //public variable that initializes the speed of our enemy, public makes it so we can change it in unity  
+    public float startSpeed = 10f;
+    [HideInInspector]
+    public float speed; //public variable that initializes the speed of our enemy, public makes it so we can change it in unity  
 
-    private Transform target;//target will be the current waypoint being pursued by the enemy, private makes it so it can only be modified in code 
-    private int wavepointIndex = 0;//this creates a variable for the enemy wave so we can destroy it once it reaches the end
+    public float health = 100;
+
+    public int reward = 50;
+
+    public GameObject deathEffect;
 
     void Start()
     {
-        target = Waypoints.points[0];//initializes target as a field with our waypoint class (blueprint) we made  
+        speed = startSpeed; 
     }
 
-    void Update ()
+    public void TakeDamage(float amount)
     {
-        Vector3 dir/*we want the direction the enemy needs to go*/ = target.position/*gets and sets targets position*/- transform.position;/*gets and sets player position*/ //this gets the direction from enemy to waypoint. to get a direction vector from one point to another you subtract them.  
-        transform.Translate(dir.normalized * speed * Time.deltaTime, Space.World);//this moves the enemy in the determined direction at a set speed, in a space relative to world. Not sure what world refers to 
+        health -= amount;
 
-        if (Vector3.Distance(transform.position, target.position) <= 0.4f)//checks if within .4 of the waypoint then to get next waypoint. this "<= .4" is so the computer has a range to work with instead of a single point  
+        if (health <= 0)
         {
-            GetNextWaypoint();
-        }
-
-        void GetNextWaypoint() 
-        {
-            if (wavepointIndex >= Waypoints.points.Length -1)// just a loop to destroy the enemy once it reaches the end of the waypoints array. 
-            {
-                Destroy(gameObject);
-                return;//returns to the top 
-            }
-
-            wavepointIndex++;
-            target = Waypoints.points[wavepointIndex];
+            Die();
         }
     }
+
+    public void Slow (float pct)
+    {
+        speed = startSpeed * (1f - pct);
+    }
+
+    void Die ()
+    {
+        PlayerStats.Money += reward;
+
+        GameObject effect = Instantiate(deathEffect, transform.position, Quaternion.identity);
+        Destroy(effect, 5f);
+
+        Destroy(gameObject);                   
+    }      
 }
