@@ -26,12 +26,15 @@ public class WaveSpawner : MonoBehaviour
 
         countdown -= Time.deltaTime;//this makes the countdown go down by 1 every second
 
-        waveCountdownText.text = Mathf.Round(countdown).ToString();//this gets rid of the decimal places and rounds the timer to a whole number
+        countdown = Mathf.Clamp(countdown, 0f, Mathf.Infinity);
+
+        waveCountdownText.text = string.Format("{0:00.00}", countdown);//this gets rid of the decimal places and rounds the timer to a whole number
     }
 
     IEnumerator SpawnWave()//this coroutine allows us to pause this amount of code
     {
         waveIndex++;
+        PlayerStats.Rounds++;
 
         for (int i = 0; i < waveIndex; i++)
         {
